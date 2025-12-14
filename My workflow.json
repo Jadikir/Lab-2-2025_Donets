@@ -1,0 +1,740 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "seconds"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -1120,
+        -144
+      ],
+      "id": "f400a472-5ef4-4632-af7c-520e5db606b0",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/bot8119771513:AAH_FnBRpQf7JUXIVP4jwCf4vq3cByd8K_M/getUpdates",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "offset",
+              "value": "={{ $vars.telegramOffset || 0 }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        -912,
+        -144
+      ],
+      "id": "1382b602-50c2-483e-983a-0438f1a12970",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "b115accf-1de2-49c8-a037-98786d5077b6",
+              "leftValue": "={{ $json['result'].length > 0 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "c8694386-9eab-4f5a-a341-2980f46176a2",
+              "leftValue": "={{ $json['result'][0].update_id > 0 }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -496,
+        -144
+      ],
+      "id": "5be797ea-224d-4120-9f14-d7b0eb2ddb42",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ab010354-d991-4a82-8d1c-5da762bc9f2f",
+              "name": "=N8N_TELEGRAM_LAST_UPDATE_ID",
+              "value": "={{ $json['result'][0].update_id }}",
+              "type": "string"
+            },
+            {
+              "id": "e25ee29e-57a8-42e3-bc44-f4b52bd2af22",
+              "name": "telegram_data",
+              "value": "={{ $json }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        144,
+        -128
+      ],
+      "id": "fcc49ba6-8cb7-4b9a-aac8-efbdd01b9dd8",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.contentType }}",
+                    "rightValue": "text",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "dc9b78c6-c11b-44be-b4ad-f4fc273dce5c"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "051aaead-bede-48fe-a989-01cb6d35e49b",
+                    "leftValue": "={{ $json.contentType }}",
+                    "rightValue": "video",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "d3842144-bc32-412b-a276-a4f0a70cd8f2",
+                    "leftValue": "{{ $json.contentType }}",
+                    "rightValue": "document",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "2c53dff7-01e8-48ac-b0bd-7ff5e4f50bac",
+                    "leftValue": "={{ $json.contentType }}",
+                    "rightValue": "audio",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "ce7ec8ba-2415-49b9-8f2c-3d51c4aaf026",
+                    "leftValue": "={{ $json.contentType }}",
+                    "rightValue": "url",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        528,
+        -112
+      ],
+      "id": "18bb48d5-6f19-418a-a174-464f31c7f5bf",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "Пожалуйста отправьте файл или ссылку на скачивание!",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1008,
+        -768
+      ],
+      "id": "b8f143bb-3740-4105-a57f-820315c2bbee",
+      "name": "Send a text message1",
+      "webhookId": "322db8d2-aaea-468c-9b4a-839ca7699ad4",
+      "credentials": {
+        "telegramApi": {
+          "id": "QzIF6bZyJDYUkwfr",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// КОД С ПРАВИЛЬНОЙ ОБРАБОТКОЙ JSON СТРОКИ (ДОПОЛНЕН ДЛЯ VIDEO)\ntry {\n  console.log('=== НАЧАЛО ОБРАБОТКИ ===');\n  \n  // Получаем все элементы\n  const allItems = $input.all();\n  console.log('Всего элементов:', allItems.length);\n  \n  // Ищем элемент с telegram_data\n  let telegramDataString = null;\n  \n  for (const item of allItems) {\n    if (item.json && item.json.telegram_data) {\n      telegramDataString = item.json.telegram_data;\n      console.log('✅ Найден telegram_data (тип:', typeof telegramDataString, ')');\n      break;\n    }\n  }\n  \n  if (!telegramDataString) {\n    console.log('❌ Не найден telegram_data');\n    return [];\n  }\n  \n  // ПАРСИМ JSON строку в объект\n  let telegramData;\n  try {\n    telegramData = JSON.parse(telegramDataString);\n    console.log('✅ JSON успешно распарсен');\n  } catch (parseError) {\n    console.error('❌ Ошибка парсинга JSON:', parseError.message);\n    console.log('Строка для парсинга:', telegramDataString.substring(0, 100) + '...');\n    return [];\n  }\n  \n  // Проверяем структуру\n  if (!telegramData.result || !Array.isArray(telegramData.result) || telegramData.result.length === 0) {\n    console.log('❌ Нет данных в result');\n    return [];\n  }\n  \n  const firstResult = telegramData.result[0];\n  \n  if (!firstResult.message) {\n    console.log('❌ Нет message в result[0]');\n    return [];\n  }\n  \n  const message = firstResult.message;\n  console.log('✅ Сообщение от:', message.from.first_name);\n  \n  // Определяем тип контента и данные\n  let contentType = 'text';\n  let contentData = '';\n  let isUrl = false;\n  let videoInfo = null;\n  \n  // ОБРАБОТКА ВИДЕО\n  // ОБРАБОТКА ВИДЕО\nif (message.video) {\n  contentType = 'video';\n  contentData = message.video.file_id; // file_id для скачивания через getFile\n  \n  // ⭐ СОХРАНЯЕМ ВСЕ ID ДЛЯ РАБОТЫ С ВИДЕО\n  videoInfo = {\n    // ОСНОВНЫЕ ID ДЛЯ API TELEGRAM\n    fileId: message.video.file_id,           // Для getFile и скачивания\n    fileUniqueId: message.video.file_unique_id, // Уникальный ID файла\n    thumbnailFileId: message.video.thumbnail?.file_id || null, // ID превью\n    \n    // МЕТАДАННЫЕ ВИДЕО\n    duration: message.video.duration,\n    width: message.video.width,\n    height: message.video.height,\n    fileSize: message.video.file_size,\n    fileName: message.video.file_name || '',\n    mimeType: message.video.mime_type || 'video/mp4',\n    \n    // ИНФОРМАЦИЯ О ПРЕВЬЮ (thumbnail)\n    thumbnail: message.video.thumbnail ? {\n      fileId: message.video.thumbnail.file_id,\n      fileUniqueId: message.video.thumbnail.file_unique_id,\n      fileSize: message.video.thumbnail.file_size,\n      width: message.video.thumbnail.width,\n      height: message.video.thumbnail.height\n    } : null,\n    \n    // ПОДПИСЬ\n    caption: message.caption || '',\n    hasCaption: !!message.caption,\n    \n    // ТЕХНИЧЕСКАЯ ИНФОРМАЦИЯ\n    fileType: 'video',\n    canBeDownloaded: true,\n    \n    // ССЫЛКИ ДЛЯ ПОЛУЧЕНИЯ ФАЙЛА (формируются)\n    getFileUrl: `https://api.telegram.org/bot{BOT_TOKEN}/getFile?file_id=${message.video.file_id}`,\n    downloadUrl: `https://api.telegram.org/file/bot{BOT_TOKEN}/{file_path}`\n  };\n  \n  console.log('🎬 Видео сообщение:');\n  console.log('   📁 File ID:', videoInfo.fileId.substring(0, 30) + '...');\n  console.log('   🆔 Unique ID:', videoInfo.fileUniqueId);\n  console.log('   📏 Разрешение:', videoInfo.width + 'x' + videoInfo.height);\n  console.log('   ⏱️ Длительность:', videoInfo.duration + 'сек');\n  console.log('   💾 Размер:', videoInfo.fileSize ? \n    Math.round(videoInfo.fileSize / 1024 / 1024 * 100) / 100 + 'MB' : 'неизвестно');\n  console.log('   🖼️ Превью:', videoInfo.thumbnail ? \n    `${videoInfo.thumbnail.width}x${videoInfo.thumbnail.height}` : 'нет');\n  console.log('   📝 Подпись:', videoInfo.caption || '(нет подписи)');\n}\n  // ОБРАБОТКА ТЕКСТА (оригинальная логика)\n  else if (message.text) {\n    contentData = message.text;\n    console.log('✅ Текст:', message.text.substring(0, 60) + '...');\n    \n    // Проверка на URL (оригинальная логика)\n    const urlRegex = /(https?:\\/\\/[^\\s]+)/g;\n    const urls = message.text.match(urlRegex);\n    if (urls && urls.length > 0) {\n      contentType = 'url';\n      isUrl = true;\n      console.log('🔗 Обнаружена ссылка');\n    }\n  }\n  // ЕСЛИ НИ ВИДЕО, НИ ТЕКСТ - ПРОБУЕМ ДРУГИЕ ТИПЫ\n  else if (message.caption) {\n    // Если есть только подпись (например, у фото без текста)\n    contentType = 'caption';\n    contentData = message.caption;\n    console.log('📝 Только подпись:', message.caption.substring(0, 60) + '...');\n  }\n  else {\n    console.log('⚠️ Неизвестный тип сообщения. Доступные поля:', Object.keys(message));\n    // Можно добавить обработку других типов по аналогии\n    return [];\n  }\n  \n  // Формируем результат (сохраняя оригинальную структуру + добавляем videoInfo если есть)\n  const result = {\n    json: {\n      // Основные данные\n      chatId: message.chat.id,\n      messageId: message.message_id,\n      updateId: firstResult.update_id,\n      \n      // Информация о пользователе\n      userId: message.from.id,\n      username: message.from.username || '',\n      firstName: message.from.first_name,\n      lastName: message.from.last_name || '',\n      \n      // Контент\n      contentType: contentType,\n      contentData: contentData,\n      text: message.text || message.caption || contentData, // Сохраняем текст или подпись\n      isUrl: isUrl,\n      \n      // Дополнительная информация о видео (если есть)\n      videoInfo: videoInfo,\n      \n      // Техническое\n      timestamp: message.date,\n      success: true,\n      processedAt: new Date().toISOString()\n    }\n  };\n  \n  console.log('✅ Обработано как:', contentType.toUpperCase());\n  return [result];\n  \n} catch (error) {\n  console.error('💥 Ошибка в Code node:', error.message);\n  console.error('Stack:', error.stack);\n  return [];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        -96
+      ],
+      "id": "cbdf7d43-a58f-4698-9a6d-081937f74fc7",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.videoUrl }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1360,
+        624
+      ],
+      "id": "08dbd6d1-cf50-451b-9818-2cba23791326",
+      "name": "HTTP Request2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Обновлённый код для Code Node (после Switch 'url')\ntry {\n  const item = $input.first().json;\n  const videoUrl = item.contentData; // Теперь это прямая ссылка на видеофайл\n  \n  console.log('🎬 Получена ссылка на видеофайл:', videoUrl);\n  \n  // Проверяем, что это действительно ссылка на файл\n  const videoExtensions = ['.mp4', '.avi', '.mov', '.mkv', '.webm', '.flv'];\n  const isVideoFile = videoExtensions.some(ext => \n    videoUrl.toLowerCase().includes(ext)\n  );\n  \n  if (!isVideoFile && !videoUrl.includes('dl=1') && !videoUrl.includes('download')) {\n    console.warn('⚠️ Ссылка может быть не на прямой файл. Возможны проблемы с загрузкой.');\n  }\n  \n  return [{\n    json: {\n      ...item,\n      videoUrl: videoUrl,\n      isDirectVideoLink: true,\n      readyForDownload: true,\n      // Метаданные будут получены после загрузки файла\n    }\n  }];\n  \n} catch (error) {\n  console.error('❌ Ошибка обработки ссылки:', error);\n  return [{\n    json: {\n      ...$input.first().json,\n      error: error.message,\n      readyForDownload: false\n    }\n  }];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        832,
+        544
+      ],
+      "id": "37730081-4aa9-4f5f-89d2-3695180e3598",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "jsCode": "try {\n  const item = $input.first().json;\n  const binaryData = $input.first().binary;\n  \n  if (!binaryData || !binaryData.data) {\n    throw new Error('Файл не загружен или бинарные данные отсутствуют');\n  }\n  \n  console.log('✅ Видеофайл загружен успешно');\n  console.log('📏 Размер:', Math.round(binaryData.data.length / 1024 / 1024), 'MB');\n  console.log('📄 Имя файла:', binaryData.fileName || 'video.mp4');\n  console.log('🎞️ MIME тип:', binaryData.mimeType || 'video/mp4');\n  \n  return [{\n    json: {\n      ...item,\n      videoFileSize: Math.round(binaryData.data.length / 1024 / 1024) + ' MB',\n      videoFileName: binaryData.fileName || 'downloaded_video.mp4',\n      videoMimeType: binaryData.mimeType || 'video/mp4',\n      downloadSuccess: true,\n      downloadTimestamp: new Date().toISOString()\n    },\n    binary: binaryData\n  }];\n  \n} catch (error) {\n  console.error('❌ Ошибка обработки загруженного файла:', error);\n  return [{\n    json: {\n      ...$input.first().json,\n      downloadSuccess: false,\n      error: error.message\n    }\n  }];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1568,
+        624
+      ],
+      "id": "ebfc1c89-bb88-4588-b9c3-2e88014f4c82",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://python-server:5000/extract_audio",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "video",
+              "inputDataFieldName": "data"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "dataAudio"
+            }
+          },
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1776,
+        624
+      ],
+      "id": "93405483-f0e5-4f9f-a8ec-bd467b5c98ca",
+      "name": "HTTP Request3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://python-server:5000/generate_subtitles",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "audio",
+              "inputDataFieldName": "dataAudio"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "dataSub"
+            }
+          },
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1984,
+        624
+      ],
+      "id": "e5c107b8-ea74-450c-81bd-a14d69a85a73",
+      "name": "HTTP Request4"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://python-server:5000/translate_subtitles",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "=subtitles",
+              "inputDataFieldName": "=dataSub"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "dataTranslatedPubs"
+            }
+          },
+          "timeout": 8000000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2192,
+        624
+      ],
+      "id": "52d9f998-74d8-4cbc-a92f-f03c30438a18",
+      "name": "HTTP Request5"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://python-server:5000//burn_subtitles",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "video",
+              "inputDataFieldName": "data"
+            },
+            {
+              "parameterType": "formBinaryData",
+              "name": "subtitles",
+              "inputDataFieldName": "dataTranslatedPubs"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "Final"
+            }
+          },
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2400,
+        624
+      ],
+      "id": "17497efc-bf59-4832-9a8f-1bae6c4f0a6d",
+      "name": "HTTP Request6"
+    },
+    {
+      "parameters": {
+        "operation": "sendVideo",
+        "chatId": "={{ $('Code in JavaScript').item.json.chatId }}",
+        "binaryData": true,
+        "binaryPropertyName": "Final",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2608,
+        624
+      ],
+      "id": "671f370f-3c33-42bf-8a67-7d45f348fac6",
+      "name": "Send a video",
+      "webhookId": "2e4226eb-68f0-45d7-a478-ea1fe06ee5fe",
+      "credentials": {
+        "telegramApi": {
+          "id": "QzIF6bZyJDYUkwfr",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Code in JavaScript').item.json.videoInfo.fileId }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1216,
+        -272
+      ],
+      "id": "d2923ad3-5c33-4c84-829f-393ec3f0d545",
+      "name": "Get a file",
+      "webhookId": "a7917f45-0d1e-43e3-a2a3-3bfbca3e91bb",
+      "credentials": {
+        "telegramApi": {
+          "id": "QzIF6bZyJDYUkwfr",
+          "name": "Telegram account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "try {\n  const updates = $input.first().json?.result || [];\n  let lastId = 0;\n  \n  // Находим последний update_id\n  for (const update of updates) {\n    if (update.update_id > lastId) {\n      lastId = update.update_id;\n    }\n  }\n  \n  // Сохраняем для следующего запуска\n  if (lastId > 0) {\n    $vars.set(\"telegramOffset\", lastId + 1);\n    console.log(`✅ Offset сохранен в переменные: ${lastId + 1}`);\n  }\n  \n  return $input.all();\n} catch(e) {\n  console.error('Error:', e);\n  return [];\n}"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -272,
+        -496
+      ],
+      "id": "b32b4c38-1de8-4d92-af7e-1f2d6729a526",
+      "name": "Code in JavaScript3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request4": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request5": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request6": {
+      "main": [
+        [
+          {
+            "node": "Send a video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b6d5ddff-c51e-47cf-a203-fd3b3ea7d80d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "38d7237aaf4a7d5c8f32c4bdfa7161c3df25bf18d6d13ad5f4d1b3f7545ba21e"
+  },
+  "id": "ofwMkIV0cWtwhWyP",
+  "tags": []
+}

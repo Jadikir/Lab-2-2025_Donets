@@ -1,0 +1,37 @@
+services:
+  n8n:
+    image: n8nio/n8n
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_PROTOCOL=http
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_WEBHOOK_URL=http://localhost:5678
+      - WEBHOOK_URL=http://localhost:5678
+      - NODE_ENV=production
+      - N8N_METRICS=false
+    volumes:
+      - n8n_data:/home/node/.n8n
+    networks:
+      - n8n-network
+
+  python-server:
+    build: ./python-server
+    container_name: python-server
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    networks:
+      - n8n-network
+    depends_on:
+      - n8n
+
+volumes:
+  n8n_data:
+
+networks:
+  n8n-network:
+    driver: bridge

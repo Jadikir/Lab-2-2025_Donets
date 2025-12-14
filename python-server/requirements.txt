@@ -1,0 +1,7 @@
+Flask==2.3.3
+openai-whisper==20231117
+torch
+transformers
+ffmpeg-python
+sentencepiece 
+protobuf     
